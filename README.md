@@ -1,3 +1,4 @@
+[![Build Status](https://dev.azure.com/stankovskisergei04/Project1/_apis/build/status%2FShadowXD2005.mslearn-tailspin-spacegame-web?branchName=main)](https://dev.azure.com/stankovskisergei04/Project1/_build/latest?definitionId=10&branchName=main)
 
 # Contributing
 
