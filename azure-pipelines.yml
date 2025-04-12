@@ -59,9 +59,7 @@ steps:
     projects: 'Tailspin.SpaceGame.Web.Tests/Tailspin.SpaceGame.Web.Tests.csproj'
     arguments: >
       --configuration $(BuildConfiguration)
-      /p:CollectCoverage=true
-      /p:CoverletOutputFormat=cobertura
-      /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/
+      --collect:"XPlat Code Coverage"
     publishTestResults: true
 
 - task: CmdLine@2
@@ -75,16 +73,15 @@ steps:
         echo "Coverage directory does not exist."
       )
 
-- task: DotNetCoreCLI@2
-  displayName: 'Create code coverage report'
+- task: CmdLine@2
+  displayName: 'Run reportgenerator (if coverage file exists)'
   inputs:
-    command: custom
-    custom: tool
-    arguments: >
-      run reportgenerator
-      -reports:$(Build.SourcesDirectory)/TestResults/Coverage/coverage.cobertura.xml
-      -targetdir:$(Build.SourcesDirectory)/CodeCoverage
-      -reporttypes:HtmlInline_AzurePipelines
+    script: |
+      IF EXIST "$(Build.SourcesDirectory)\TestResults\Coverage\coverage.cobertura.xml" (
+        dotnet tool run reportgenerator -reports:"$(Build.SourcesDirectory)\TestResults\Coverage\coverage.cobertura.xml" -targetdir:"$(Build.SourcesDirectory)\CodeCoverage" -reporttypes:HtmlInline_AzurePipelines
+      ) ELSE (
+        echo "Coverage file not found. Skipping report generation."
+      )
 
 - task: PublishCodeCoverageResults@1
   displayName: 'Publish code coverage report'
