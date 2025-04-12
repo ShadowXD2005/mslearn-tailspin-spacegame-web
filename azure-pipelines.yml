@@ -74,7 +74,7 @@ steps:
     publishTestResults: true
 
 # Debugging: Check if the coverage file exists
-- script: dir $(Build.SourcesDirectory)/TestResults/Coverage/
+- script: dir "$(Build.SourcesDirectory)\TestResults\Coverage"
   displayName: 'List Coverage Directory'
 
 # Step 10: Create code coverage report
