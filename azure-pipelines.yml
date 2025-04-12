@@ -43,7 +43,8 @@ steps:
   inputs:
     command: 'build'
     arguments: '--no-restore --configuration $(buildConfiguration)'
-    projects: '**/*.csproj'
+    projects: 'Tailspin.SpaceGame.Web/Tailspin.SpaceGame.Web.csproj'
+
 
 - task: DotNetCoreCLI@2
   displayName: 'Install .NET tools from local manifest'
@@ -58,7 +59,8 @@ steps:
     command: 'test'
     arguments: '--no-build --configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
     publishTestResults: true
-    projects: '**/*.Tests.csproj'
+    projects: 'Tailspin.SpaceGame.Web.Tests/Tailspin.SpaceGame.Web.Tests.csproj'
+
 
 - task: DotNetCoreCLI@2
   displayName: 'Create code coverage report'
@@ -77,10 +79,11 @@ steps:
   displayName: 'Publish the project - $(buildConfiguration)'
   inputs:
     command: 'publish'
-    projects: '**/*.csproj'
+    projects: 'Tailspin.SpaceGame.Web/Tailspin.SpaceGame.Web.csproj'
     publishWebProjects: false
     arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
     zipAfterPublish: true
+
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
