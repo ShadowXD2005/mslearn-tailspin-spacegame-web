@@ -12,32 +12,39 @@ variables:
   dotnetSdkVersion: '8.x'
 
 steps:
+# Step 1: Use .NET SDK
 - task: UseDotNet@2
   displayName: 'Use .NET SDK $(dotnetSdkVersion)'
   inputs:
     version: '$(dotnetSdkVersion)'
 
+# Step 2: Run npm install
 - task: Npm@1
   displayName: 'Run npm install'
   inputs:
     verbose: false
 
+# Step 3: Compile Sass assets
 - script: './node_modules/.bin/node-sass $(wwwrootDir) --output $(wwwrootDir)'
   displayName: 'Compile Sass assets'
 
+# Step 4: Run gulp tasks
 - task: gulp@1
   displayName: 'Run gulp tasks'
 
+# Step 5: Write build info to a text file
 - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt'
   displayName: 'Write build info'
   workingDirectory: $(wwwrootDir)
 
+# Step 6: Restore project dependencies
 - task: DotNetCoreCLI@2
   displayName: 'Restore project dependencies'
   inputs:
     command: 'restore'
     projects: '**/*.csproj'
 
+# Step 7: Build the project
 - task: DotNetCoreCLI@2
   displayName: 'Build the project - $(buildConfiguration)'
   inputs:
@@ -45,7 +52,7 @@ steps:
     arguments: '--no-restore --configuration $(buildConfiguration)'
     projects: 'Tailspin.SpaceGame.Web/Tailspin.SpaceGame.Web.csproj'
 
-
+# Step 8: Install .NET tools from local manifest (Optional step)
 - task: DotNetCoreCLI@2
   displayName: 'Install .NET tools from local manifest'
   inputs:
@@ -53,6 +60,7 @@ steps:
     custom: tool
     arguments: 'restore'
 
+# Step 9: Run unit tests and collect coverage
 - task: DotNetCoreCLI@2
   displayName: 'Run unit tests - $(BuildConfiguration)'
   inputs:
@@ -65,8 +73,7 @@ steps:
       /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/
     publishTestResults: true
 
-
-
+# Step 10: Create code coverage report
 - task: DotNetCoreCLI@2
   displayName: 'Create code coverage report'
   inputs:
@@ -78,12 +85,14 @@ steps:
       -targetdir:$(Build.SourcesDirectory)/CodeCoverage
       -reporttypes:HtmlInline_AzurePipelines
 
+# Step 11: Publish code coverage results
 - task: PublishCodeCoverageResults@1
   displayName: 'Publish code coverage report'
   inputs:
     codeCoverageTool: 'cobertura'
-    summaryFileLocation: '$(Build.SourcesDirectory)/**/coverage.cobertura.xml'
+    summaryFileLocation: '$(Build.SourcesDirectory)/TestResults/Coverage/coverage.cobertura.xml'
 
+# Step 12: Publish the project output
 - task: DotNetCoreCLI@2
   displayName: 'Publish the project - $(buildConfiguration)'
   inputs:
@@ -93,7 +102,7 @@ steps:
     arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
     zipAfterPublish: true
 
-
+# Step 13: Publish the build artifact
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
   condition: succeeded()
