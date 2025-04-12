@@ -65,9 +65,15 @@ steps:
     publishTestResults: true
 
 - task: CmdLine@2
-  displayName: 'List Coverage Directory'
+  displayName: 'Check and List Coverage Directory'
   inputs:
-    script: 'dir "$(Build.SourcesDirectory)\TestResults\Coverage"'
+    script: |
+      IF EXIST "$(Build.SourcesDirectory)\TestResults\Coverage" (
+        echo "Directory exists. Listing contents:"
+        dir "$(Build.SourcesDirectory)\TestResults\Coverage"
+      ) ELSE (
+        echo "Coverage directory does not exist."
+      )
 
 - task: DotNetCoreCLI@2
   displayName: 'Create code coverage report'
