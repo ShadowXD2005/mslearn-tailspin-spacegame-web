@@ -73,6 +73,10 @@ steps:
       /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/
     publishTestResults: true
 
+# Debugging: Check if the coverage file exists
+- script: dir $(Build.SourcesDirectory)/TestResults/Coverage/
+  displayName: 'List Coverage Directory'
+
 # Step 10: Create code coverage report
 - task: DotNetCoreCLI@2
   displayName: 'Create code coverage report'
