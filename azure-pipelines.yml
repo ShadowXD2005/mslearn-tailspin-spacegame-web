@@ -54,12 +54,16 @@ steps:
     arguments: 'restore'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Run unit tests - $(buildConfiguration)'
+  displayName: 'Run unit tests - $(BuildConfiguration)'
   inputs:
-    command: 'test'
-    arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
-    publishTestResults: true
+    command: test
     projects: 'Tailspin.SpaceGame.Web.Tests/Tailspin.SpaceGame.Web.Tests.csproj'
+    arguments: >
+      --configuration $(BuildConfiguration)
+      /p:CollectCoverage=true
+      /p:CoverletOutputFormat=cobertura
+      /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/
+    publishTestResults: true
 
 
 
